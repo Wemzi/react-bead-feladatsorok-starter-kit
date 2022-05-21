@@ -215,3 +215,4 @@ Az egész projektet tömörítsd be, kliensestül, szerverestül, és azt tölts
 - Igényes megjelenés (2pt)
 - 1 hét késés (-3pt)
 - 2 hét késés (-6pt)
+"# klienso-secondassignment" 
