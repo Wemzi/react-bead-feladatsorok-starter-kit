@@ -15,6 +15,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 function createData(name, calories, fat, carbs, protein, price) {
+  const currentTime = new Date().toString().split("GMT")[0]
   return {
     name,
     calories,
@@ -22,6 +23,8 @@ function createData(name, calories, fat, carbs, protein, price) {
     carbs,
     protein,
     price,
+    dateCreated: currentTime,
+    dateModified:currentTime,
     history: [
       {
         date: '2020-01-05',
@@ -60,21 +63,23 @@ function Row(props) {
         <TableCell align="right">{row.fat}</TableCell>
         <TableCell align="right">{row.carbs}</TableCell>
         <TableCell align="right">{row.protein}</TableCell>
+        <TableCell align="right">{row.dateCreated}</TableCell>
+        <TableCell align="right">{row.dateModified}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                History
+                Task List Details (Total score: 24)
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Comment</TableCell>
+                    <TableCell align="right">Score</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -134,10 +139,12 @@ export default function TaskList() {
           <TableRow>
             <TableCell />
             <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
+            <TableCell align="right">Title</TableCell>
+            <TableCell align="right">Status</TableCell>
+            <TableCell align="right">Description</TableCell>
+            <TableCell align="right">Number of tasks</TableCell>
+            <TableCell align="right">Date created</TableCell>
+            <TableCell align="right">Date modified</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
