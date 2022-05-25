@@ -2,16 +2,31 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import { useRegisterMutation } from '../state/tasksApiSlice';
+import { useDispatch } from 'react-redux';
 
-export const Registration = ({ handleClose }) => {
+export const Registration = () => {
   // create state variables for each input
-  const [firstName, setFirstName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = e => {
+  const [register] = useRegisterMutation()
+  const dispatch = useDispatch();
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    handleClose();
+    try {
+      const result = await register({
+        email,
+        password,
+        fullname:fullName
+      }).unwrap();
+
+      console.log(result);
+      
+    } catch (err) {
+    }
   };
 
   return (
@@ -20,8 +35,8 @@ export const Registration = ({ handleClose }) => {
         label="Full Name"
         variant="filled"
         required
-        value={firstName}
-        onChange={e => setFirstName(e.target.value)}
+        value={fullName}
+        onChange={e => setFullName(e.target.value)}
       />
       <TextField
         label="Email"
@@ -40,9 +55,6 @@ export const Registration = ({ handleClose }) => {
         onChange={e => setPassword(e.target.value)}
       />
       <div>
-        <Button variant="contained" onClick={handleClose}>
-          Cancel
-        </Button>
         <Button type="submit" variant="contained" color="primary">
           Signup
         </Button>

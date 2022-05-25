@@ -2,14 +2,36 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import { login } from '../state/authSlice';
+import { useLoginMutation } from '../state/tasksApiSlice';
+import { useDispatch } from 'react-redux';
 
 export const Login = ({ handleClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = e => {
+  const [authLogin] = useLoginMutation()
+  const dispatch = useDispatch();
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    handleClose();
+    try {
+      const result = await authLogin({
+        strategy: "local",
+        email,
+        password
+      }).unwrap();
+
+      console.log(result);
+
+      dispatch(
+        login({
+          user: result.user,
+          token: result.accessToken,
+        })
+      );
+    } catch (err) {
+    }
   };
 
   return (
@@ -31,9 +53,6 @@ export const Login = ({ handleClose }) => {
         onChange={e => setPassword(e.target.value)}
       />
       <div>
-        <Button variant="contained" onClick={handleClose}>
-          Cancel
-        </Button>
         <Button type="submit" variant="contained" color="primary">
           Login
         </Button>

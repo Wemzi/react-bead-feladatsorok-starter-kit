@@ -12,10 +12,14 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useGetTaskListsQuery, useGetTaskListWithIDQuery, useGetTasksQuery} from "../state/tasksApiSlice"
+import {
+  useGetTaskListsQuery,
+  useGetTaskListWithIDQuery,
+  useGetTasksQuery,
+} from "../state/tasksApiSlice";
 import { useSelector } from "react-redux";
 import { selectAuthToken } from "../state/authSlice";
-
+import { Button } from "@mui/material";
 
 function createData(
   id,
@@ -51,12 +55,14 @@ function createData(
 
 function Row(props) {
   const { row } = props;
+  const {edited} = props;
+  const {handleEdit} =props;
   const [open, setOpen] = React.useState(false);
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+      <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -66,40 +72,34 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.title}
+          {row.id}
         </TableCell>
-        <TableCell align="right">{row.status}</TableCell>
+        <TableCell component="th" scope="row">
+          {row.title} {edited ? "(Selected)" : ""}
+        </TableCell>
         <TableCell align="right">{row.description}</TableCell>
-        <TableCell align="right">{row.tasks.length}</TableCell>
-        <TableCell align="right">{row.createdAt}</TableCell>
-        <TableCell align="right">{row.updatedAt}</TableCell>
+        <TableCell><Button key={row.id} variant="contained" onClick={handleEdit}>Edit</Button></TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Task List Details (Total score: 24)
+                Task Details
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>iD</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell align="right">Score</TableCell>
+                    <TableCell>Creation Date</TableCell>
+                    <TableCell>Modification date</TableCell>
                   </TableRow>
                 </TableHead>
-                {<TableBody>
-                  {row.tasks.map((Row) => (
-                    <TableRow key={Row.id}>
-                      <TableCell component="th" scope="row">
-                        {Row.id}
-                      </TableCell>
-                      <TableCell>{Row.notes}</TableCell>
-                      <TableCell align="right">{Row.points}</TableCell>
+                <TableBody>
+                    <TableRow key={row.id}>
+                      <TableCell>{row.createdAt}</TableCell>
+                      <TableCell>{row.updatedAt}</TableCell>
                     </TableRow>
-                  ))}
-                  </TableBody>}
+                </TableBody>
               </Table>
             </Box>
           </Collapse>
@@ -118,29 +118,53 @@ const rows = [
 ];
 
 export default function TaskList() {
-  const {data} = useGetTaskListsQuery();
+  const [editedTaskID, SetEditedTaskID] = React.useState(-1);
+  const [skip, SetSkip] = React.useState(0);
+  const [limit, SetLimit] = React.useState(10);
+  const { data } = useGetTasksQuery(skip, limit);
+  const handleNext = () => {
+    SetSkip(skip + limit);
+  };
+  const handlePrev = () => {
+    SetSkip(skip - limit);
+  };
+  const handleEdit = (e) => 
+  {
+    SetEditedTaskID(e.target.id)
+    console.log(editedTaskID)
+  }
+
   console.log(data);
-  return data ?(
+  return data ? (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell />
-            <TableCell>List name</TableCell>
-            <TableCell align="right">Status</TableCell>
+          <TableCell></TableCell>
+            <TableCell>Task name</TableCell>
             <TableCell align="right">Description</TableCell>
-            <TableCell align="right">Number of tasks</TableCell>
-            <TableCell align="right">Date created</TableCell>
-            <TableCell align="right">Date modified</TableCell>
+
+            <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.map((row) => (
-            <Row key={row.id} row={row} />
-          )
-          )}
+            <Row key={row.id} row={row} edited={editedTaskID===row.id} editHandler={handleEdit}/>
+          ))}
         </TableBody>
       </Table>
+
+      <Box display="flex" justifyContent="center">
+        <Button onClick={handlePrev} variant="contained">
+          Prev
+        </Button>
+        <Box width=""></Box>
+        <Button onClick={handleNext} variant="contained" align="right">
+          Next
+        </Button>
+      </Box>
     </TableContainer>
-  ) : "loading";
+  ) : (
+    "loading"
+  );
 }
